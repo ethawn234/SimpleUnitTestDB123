@@ -214,7 +214,7 @@ namespace TestProject1
         //
         #endregion
 
-        [TestMethod()]
+        [TestMethod(), ExpectedSqlException(Severity = 16, MatchFirstError = false, State = 1)]
         public void Sales_uspCancelOrderTest()
         {
             SqlDatabaseTestActions testActions = this.Sales_uspCancelOrderTestData;
