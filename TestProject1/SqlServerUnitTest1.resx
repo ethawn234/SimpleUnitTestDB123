@@ -167,15 +167,17 @@ SELECT @RC = [YTDSales] FROM [Sales].[Customer] WHERE [CustomerID] = @CustomerID
 SELECT @RC AS RC;</value>
   </data>
   <data name="Sales_uspNewCustomerTest_TestAction.SqlScript" xml:space="preserve">
-    <value>-- ssNoVersion unit test for Sales.uspNewCustomer  
-DECLARE @RC AS INT, @CustomerName AS NVARCHAR (40);  
+    <value>-- Unit test for Sales.uspNewCustomer
+DECLARE @CustomerName NVARCHAR(40);
+SET @CustomerName = N'Fictitious Customer';
 
-SELECT @RC = 0,  
-       @CustomerName = 'Fictitious Customer';  
+-- Run the procedure
+EXEC [Sales].[uspNewCustomer] @CustomerName;
 
-EXECUTE @RC = [Sales].[uspNewCustomer] @CustomerName;  
-
-SELECT * FROM [Sales].[Customer];</value>
+-- Return inserted row for verification
+SELECT CustomerName FROM [Sales].[Customer]
+WHERE CustomerName = @CustomerName;
+</value>
   </data>
   <data name="Sales_uspPlaceNewOrderTest_TestAction.SqlScript" xml:space="preserve">
     <value>-- ssNoVersion unit test for Sales.uspPlaceNewOrder  
@@ -199,6 +201,33 @@ EXECUTE @RC = [Sales].[uspPlaceNewOrder] @CustomerID, @Amount, @OrderDate, @Stat
 SELECT @RC = [YTDOrders] FROM [Sales].[Customer] WHERE [CustomerID] = @CustomerID  
 
 SELECT @RC AS RC</value>
+  </data>
+  <metadata name="expectedSchemaCondition1.Configuration" xml:space="preserve">
+    <value>Press to configure</value>
+  </metadata>
+  <metadata name="checksumCondition1.Configuration" xml:space="preserve">
+    <value>Press to configure</value>
+  </metadata>
+  <data name="Sales_uspShowOrderDetailsTest_TestAction.SqlScript" xml:space="preserve">
+    <value>-- ssNoVersion unit test for Sales.uspFillOrder  
+DECLARE @RC AS INT, @CustomerID AS INT, @Amount AS INT, @FilledDate AS DATETIME, @Status AS CHAR (1);  
+DECLARE @CustomerName AS NVARCHAR(40), @OrderID AS INT;  
+
+SELECT @RC = 0,  
+       @CustomerID = 0,  
+       @OrderID = 0,  
+       @CustomerName = N'Fictitious Customer',  
+       @Amount = 100,  
+       @FilledDate = getdate(),  
+       @Status = 'O';  
+
+-- NOTE: Assumes that you inserted a Customer record with CustomerName='Fictitious Customer' in the pre-test script.  
+SELECT @CustomerID = [CustomerID] FROM [Sales].[Customer] WHERE [CustomerName] = @CustomerName;  
+
+-- fill an order for that customer  
+EXECUTE @RC = [Sales].[uspShowOrderDetails] @CustomerID;  
+
+SELECT @RC AS RC;</value>
   </data>
   <metadata name="expectedSchemaCondition1.Configuration" xml:space="preserve">
     <value>Press to configure</value>
@@ -240,27 +269,6 @@ SELECT @RC AS RC</value>
   <metadata name="checksumCondition1.Configuration" xml:space="preserve">
     <value>Press to configure</value>
   </metadata>
-  <data name="Sales_uspShowOrderDetailsTest_TestAction.SqlScript" xml:space="preserve">
-    <value>-- ssNoVersion unit test for Sales.uspFillOrder  
-DECLARE @RC AS INT, @CustomerID AS INT, @Amount AS INT, @FilledDate AS DATETIME, @Status AS CHAR (1);  
-DECLARE @CustomerName AS NVARCHAR(40), @OrderID AS INT;  
-
-SELECT @RC = 0,  
-       @CustomerID = 0,  
-       @OrderID = 0,  
-       @CustomerName = N'Fictitious Customer',  
-       @Amount = 100,  
-       @FilledDate = getdate(),  
-       @Status = 'O';  
-
--- NOTE: Assumes that you inserted a Customer record with CustomerName='Fictitious Customer' in the pre-test script.  
-SELECT @CustomerID = [CustomerID] FROM [Sales].[Customer] WHERE [CustomerName] = @CustomerName;  
-
--- fill an order for that customer  
-EXECUTE @RC = [Sales].[uspShowOrderDetails] @CustomerID;  
-
-SELECT @RC AS RC;</value>
-  </data>
   <data name="Sales_uspPlaceNewOrderTest_PretestAction.SqlScript" xml:space="preserve">
     <value>/*
 Add SQL statements here that you want to run before
